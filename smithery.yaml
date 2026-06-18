@@ -1,0 +1,32 @@
+# Smithery listing for HireSignal — remote SSE MCP server.
+# Docs: https://smithery.ai/docs
+startCommand:
+  type: sse
+  url: https://hiresignal-mcp-production-d4d9.up.railway.app/sse
+  configSchema:
+    type: object
+    required:
+      - apiKey
+    properties:
+      apiKey:
+        type: string
+        title: HireSignal API Key
+        description: Your HireSignal API key, sent as 'Authorization: Bearer <key>'.
+  # Maps user-provided config to the connection headers.
+  headers:
+    Authorization: "Bearer {{apiKey}}"
+metadata:
+  displayName: HireSignal
+  description: >-
+    Real-time job market intelligence for AI agents. Live job search, company
+    hiring velocity, skill demand pulse, salary estimates, industry hiring
+    heatmaps, and competitor talent intel.
+  categories:
+    - data
+    - productivity
+  tags:
+    - jobs
+    - hiring
+    - recruiting
+    - salary
+    - labor-market
