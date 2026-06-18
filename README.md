@@ -1,11 +1,17 @@
-# HireSignal MCP
+# HireSignal — Hiring-Intent Signals for B2B Sales
 
-Real-time job market intelligence as an MCP server. Plug HireSignal into Claude, Cursor, Cline, or Windsurf and ask questions like:
+**Turn live job postings into buying signals your AI agent can call.**
 
-- "Which companies in fintech are hiring ML engineers right now?"
-- "What skills are most in-demand in NYC this week?"
-- "Is Stripe growing its data team or shrinking it?"
-- "Show me Staff Engineer roles in London posted in the last 24 hours."
+When a company posts for a VP Sales, RevOps Manager, or Data Security Analyst, it's telling you it has a pain and an approved budget — typically **60–90 days before** it starts researching vendors. HireSignal is an MCP server that surfaces those hiring signals so your sales/GTM agent can find in-market accounts, score them, and time outreach.
+
+Plug it into Claude, Cursor, Cline, or Windsurf and ask:
+
+- "Which fintechs posted a RevOps or Sales Ops role in the last 7 days?" *(→ in-market for CRM/sales tooling)*
+- "Is Stripe scaling or freezing its data team right now?" *(→ account expansion = budget unlocking)*
+- "Compare hiring momentum across these 5 target accounts."
+- "Which companies started hiring for Snowflake this month?" *(→ buying signal for adjacent data tooling)*
+
+Also works for recruiting intel, comp benchmarking, and market research — but it's built sales-first.
 
 The server speaks the **Model Context Protocol** over **SSE** so it can be hosted remotely (Railway, Fly, anywhere with HTTPS).
 

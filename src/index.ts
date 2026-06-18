@@ -27,7 +27,7 @@ import {
   type AuthConfig,
 } from "./auth.js";
 
-const VERSION = "0.1.0";
+const VERSION = "0.2.0";
 const SERVER_NAME = "hiresignal";
 
 interface ToolDefinition {

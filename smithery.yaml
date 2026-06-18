@@ -19,17 +19,21 @@ startCommand:
   headers:
     Authorization: "Bearer {{apiKey}}"
 metadata:
-  displayName: HireSignal
+  displayName: HireSignal — Hiring-Intent Signals for Sales
   description: >-
-    Real-time job market intelligence for AI agents. Live job search, company
-    hiring velocity, skill demand pulse, salary estimates, industry hiring
-    heatmaps, and competitor talent intel.
+    Turn live job postings into B2B buying signals your AI agent can call. A
+    company hiring a VP Sales, RevOps Manager, or Data Security Analyst is
+    in-market with budget approved — 60-90 days before they start vendor
+    research. Score accounts by hiring velocity, get real-time new-req alerts,
+    compare target accounts, and map where a vertical is investing.
   categories:
     - data
-    - productivity
+    - business
   tags:
-    - jobs
-    - hiring
-    - recruiting
-    - salary
-    - labor-market
+    - sales-intelligence
+    - buying-signals
+    - intent-data
+    - prospecting
+    - gtm
+    - hiring-signals
+    - lead-generation

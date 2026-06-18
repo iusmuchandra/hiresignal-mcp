@@ -114,6 +114,6 @@ export async function competitorTalentIntel(rawInput: unknown): Promise<Competit
 export const competitorIntelToolDefinition = {
   name: "competitor_talent_intel",
   description:
-    "Compare up to 5 companies side by side on current hiring: total open roles, postings in the last 7 days, the top recurring job titles, the top departments hiring, and a directional growth signal. Use this for competitive-intel questions like 'OpenAI vs Anthropic vs Mistral hiring activity' or 'Compare growth across our top 3 competitors'.",
+    "Compare up to 5 companies side by side on current hiring: total open roles, last-7d postings, top recurring titles, top departments hiring, and a directional growth signal. Use for account prioritization (which of these target accounts are scaling vs freezing), competitive intel ('OpenAI vs Anthropic vs Mistral'), or market-mapping a shortlist of prospects.",
   inputSchema: CompetitorIntelInput,
 } as const;

@@ -153,6 +153,6 @@ export async function skillDemandPulse(rawInput: unknown): Promise<SkillPulseRes
 export const skillPulseToolDefinition = {
   name: "skill_demand_pulse",
   description:
-    "Measure how in-demand a specific skill (language, framework, tool) is right now, with a week-over-week trend, sample-based average salary mention, and the top companies posting roles requiring that skill. Use this for questions like 'Is Rust hot right now?' or 'Who is hiring for LangChain?'. Returns directional signal — sample sizes can be small for niche skills.",
+    "Measure demand for a specific skill/tool/technology right now: week-over-week trend, sample-based avg salary, and the top companies hiring for it. Use as a tech-adoption buying signal (companies hiring for 'Snowflake' or 'LangChain' are investing in that stack = prospects for adjacent tooling vendors) or for talent/market research. Directional; sample sizes can be small for niche skills.",
   inputSchema: SkillPulseInput,
 } as const;

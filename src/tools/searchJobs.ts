@@ -104,6 +104,6 @@ export async function searchJobs(rawInput: unknown): Promise<SearchJobsResult> {
 export const searchJobsToolDefinition = {
   name: "search_jobs",
   description:
-    "Find live job postings matching a role/skill query in a specific location, filtered by how recently they were posted. Use this when the user wants concrete current openings (with apply links). Returns up to 20 jobs with title, company, location, posted date, salary (when published), and apply URL. Cache TTL is 15 minutes. Best for: 'find roles', 'who is hiring for X', 'recent postings'.",
+    "Find live job postings for a role in a location — and read them as a B2B buying signal. A company posting for a role that implies your category (e.g. 'RevOps Manager', 'VP Sales', 'Data Security Analyst') is in-market with budget approved, typically 60-90 days before they start vendor research. Returns up to 20 postings with company, title, location, posted date, salary, and apply/source URL. Also works for plain job discovery. Cache TTL 15 minutes.",
   inputSchema: SearchJobsInput,
 } as const;

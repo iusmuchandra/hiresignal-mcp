@@ -119,6 +119,6 @@ export async function companyHiringVelocity(rawInput: unknown): Promise<CompanyV
 export const companyVelocityToolDefinition = {
   name: "company_hiring_velocity",
   description:
-    "Estimate how fast a specific company is hiring right now. Returns total open roles, postings added in the last 7d and 30d, the top departments they are hiring into, and a directional 'growing/stable/shrinking' trend with confidence. Use this when the user asks whether a company is scaling, freezing, or contracting. Pass the company name as plainly as possible (e.g., 'Stripe', not 'stripe.com').",
+    "Measure how fast a specific company is hiring right now — a proxy for budget unlocking and account expansion. Returns total open roles, postings added in the last 7d/30d, top departments hiring, and a directional 'growing/stable/shrinking' trend with confidence. Use for account scoring and prospecting ('is this account expanding = worth pursuing?'), competitive intel, or due diligence. Pass the company name plainly (e.g., 'Stripe', not 'stripe.com').",
   inputSchema: CompanyVelocityInput,
 } as const;

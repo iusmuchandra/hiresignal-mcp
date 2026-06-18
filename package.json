@@ -1,7 +1,7 @@
 {
   "name": "hiresignal-mcp",
-  "version": "0.1.0",
-  "description": "Real-time job market intelligence MCP server. Query live hiring data from any AI agent.",
+  "version": "0.2.0",
+  "description": "Hiring-intent signal API for B2B sales/GTM. Turn live job postings into buying signals from any AI agent.",
   "type": "module",
   "main": "dist/index.js",
   "bin": {

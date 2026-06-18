@@ -134,6 +134,6 @@ export async function industryHiringHeatmap(rawInput: unknown): Promise<Industry
 export const industryHeatmapToolDefinition = {
   name: "industry_hiring_heatmap",
   description:
-    "Show where an industry vertical is adding headcount right now, broken down by department (engineering, data/ml, sales, product, etc.) with a percentage change vs the prior period. Use this for questions like 'Where is fintech hiring?' or 'Which functions in climate tech are growing?'. Returns rows sorted by current open-roles count.",
+    "Show where an industry vertical is adding headcount right now, by department (engineering, data/ml, sales, product, etc.) with % change vs the prior period. Use for territory and market planning — find where the buying is happening this quarter ('which functions in fintech are expanding?') before you allocate reps or spend. Rows sorted by current open-roles count.",
   inputSchema: IndustryHeatmapInput,
 } as const;

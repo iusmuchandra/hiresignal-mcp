@@ -112,6 +112,6 @@ export async function jobAlertCheck(rawInput: unknown): Promise<JobAlertCheckRes
 export const jobAlertCheckToolDefinition = {
   name: "job_alert_check",
   description:
-    "Poll for new job postings matching a query/location since a given number of hours ago. Designed for agents/cron jobs that want to surface newly listed roles without re-fetching the whole feed. Cache is bypassed on each call. Returns posting IDs the caller can deduplicate against prior runs.",
+    "Poll for NEW job postings matching a role/location since N hours ago — built for sales/prospecting agents and cron loops that want fresh buying signals the moment they appear (a new 'VP Sales' or 'RevOps' req = an account going in-market). Cache is bypassed on every call. Returns posting IDs to deduplicate against prior runs.",
   inputSchema: JobAlertCheckInput,
 } as const;

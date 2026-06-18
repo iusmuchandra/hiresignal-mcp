@@ -136,6 +136,6 @@ export async function marketSalaryEstimate(rawInput: unknown): Promise<SalaryEst
 export const salaryEstimateToolDefinition = {
   name: "market_salary_estimate",
   description:
-    "Estimate the current going salary band (p25/median/p75) for a specific job title, location, and seniority, using only postings that disclosed pay in the last 30 days. Also returns a remote vs onsite premium where data permits. Use this for comp benchmarking. Sample sizes can be small in markets without pay-transparency laws — always check the returned sample_size and notes.",
+    "Estimate the current salary band (p25/median/p75) for a job title + location + seniority from postings that disclosed pay in the last 30 days, plus a remote vs onsite premium where data permits. Use for comp benchmarking, offer calibration, or enriching account/role records. Check the returned sample_size and notes — samples can be small in markets without pay-transparency laws.",
   inputSchema: SalaryEstimateInput,
 } as const;
