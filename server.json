@@ -1,12 +1,12 @@
 {
-  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.json",
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.iusmuchandra/hiresignal",
-  "description": "Real-time job market intelligence. Query live hiring data: job search, company hiring velocity, skill demand trends, salary estimates, industry heatmaps, and competitor talent intel.",
+  "description": "Real-time job market intelligence: live job search, hiring velocity, salary & skill trends.",
+  "version": "0.1.0",
   "repository": {
     "url": "https://github.com/iusmuchandra/hiresignal-mcp",
     "source": "github"
   },
-  "version": "0.1.0",
   "remotes": [
     {
       "type": "sse",
