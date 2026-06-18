@@ -9,6 +9,17 @@ Real-time job market intelligence as an MCP server. Plug HireSignal into Claude,
 
 The server speaks the **Model Context Protocol** over **SSE** so it can be hosted remotely (Railway, Fly, anywhere with HTTPS).
 
+## Try it instantly (hosted demo)
+
+A live instance is running with a shared, rate-limited demo key. Point any MCP client at:
+
+```
+URL:    https://hiresignal-mcp-production-d4d9.up.railway.app/sse
+Header: Authorization: Bearer hs_demo_0b25932234553fd38b571f12c1439bfd
+```
+
+> The demo key is heavily rate-limited and shares a small monthly data quota — expect `QUOTA_EXHAUSTED` during busy periods. For a dedicated key with higher limits, get in touch.
+
 ## Tools
 
 | Tool | What it does |

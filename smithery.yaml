@@ -11,7 +11,10 @@ startCommand:
       apiKey:
         type: string
         title: HireSignal API Key
-        description: Your HireSignal API key, sent as 'Authorization: Bearer <key>'.
+        default: hs_demo_0b25932234553fd38b571f12c1439bfd
+        description: >-
+          Your HireSignal API key, sent as 'Authorization: Bearer <key>'. Leave
+          as-is to use the shared (rate-limited) demo key, or paste your own.
   # Maps user-provided config to the connection headers.
   headers:
     Authorization: "Bearer {{apiKey}}"
