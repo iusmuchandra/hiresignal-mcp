@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { jobSearchCache } from "../cache.js";
+import { VERSION } from "../version.js";
 
 export const ServerStatusInput = z.object({}).describe("No arguments.");
 
@@ -23,7 +24,6 @@ export interface ServerStatusResult {
 }
 
 const STARTED_AT_MS = Date.now();
-const VERSION = "0.1.0";
 
 export async function getServerStatus(_rawInput: unknown): Promise<ServerStatusResult> {
   const serpapiConfigured = !!(process.env.SERPAPI_KEY && process.env.SERPAPI_KEY.trim());
