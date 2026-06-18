@@ -86,18 +86,32 @@ export async function searchJobsRaw(
   const apiKey = getApiKey();
   const timeoutMs = opts.timeoutMs ?? DEFAULT_TIMEOUT_MS;
 
+  // Google Jobs (SerpApi) returns 400 if "Remote"/"Anywhere" is sent as a
+  // `location` value — it only accepts real geographies. Treat those as a
+  // remote-work intent instead: drop the location param and fold the keyword
+  // into the query so the engine surfaces work-from-home roles. rerankByLocation
+  // (below) still floats genuinely-remote postings to the top.
+  const isRemoteIntent = /^(remote|anywhere|work from home|wfh)$/i.test(
+    (params.location ?? "").trim()
+  );
+  const effectiveLocation = isRemoteIntent ? undefined : params.location;
+  const effectiveQuery =
+    isRemoteIntent && !/\bremote\b/i.test(params.query)
+      ? `${params.query} remote`
+      : params.query;
+
   const qs = new URLSearchParams({
     engine: "google_jobs",
-    q: params.query,
+    q: effectiveQuery,
     api_key: apiKey,
   });
-  if (params.location) qs.set("location", params.location);
+  if (effectiveLocation) qs.set("location", effectiveLocation);
   if (params.date_posted) qs.set("chips", `date_posted:${params.date_posted}`);
 
   const cacheKey = stableKey({
     provider: "serpapi",
-    query: params.query,
-    location: params.location ?? "",
+    query: effectiveQuery,
+    location: effectiveLocation ?? "",
     date_posted: params.date_posted ?? "",
   });
 
