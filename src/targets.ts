@@ -53,6 +53,59 @@ export const TARGETS: readonly Target[] = [
   { company: "Lyft", provider: "greenhouse", boardId: "lyft", industry: "consumer" },
   { company: "Discord", provider: "greenhouse", boardId: "discord", industry: "consumer" },
   { company: "Flexport", provider: "greenhouse", boardId: "flexport", industry: "logistics" },
+
+  // ── Additional verified Greenhouse / Ashby boards ───────────────────────────
+  { company: "Figma", provider: "greenhouse", boardId: "figma", industry: "devtools" },
+  { company: "Airtable", provider: "greenhouse", boardId: "airtable", industry: "saas" },
+  { company: "Gusto", provider: "greenhouse", boardId: "gusto", industry: "fintech" },
+  { company: "Scale AI", provider: "greenhouse", boardId: "scaleai", industry: "ai" },
+  { company: "Verkada", provider: "greenhouse", boardId: "verkada", industry: "security" },
+  { company: "Nuro", provider: "greenhouse", boardId: "nuro", industry: "ai" },
+  { company: "CircleCI", provider: "greenhouse", boardId: "circleci", industry: "devtools" },
+  { company: "Webflow", provider: "greenhouse", boardId: "webflow", industry: "saas" },
+  { company: "Amplitude", provider: "greenhouse", boardId: "amplitude", industry: "data_infra" },
+  { company: "Razorpay", provider: "greenhouse", boardId: "razorpaysoftwareprivatelimited", industry: "fintech" },
+  { company: "Modal", provider: "ashby", boardId: "modal", industry: "ai" },
+  { company: "Baseten", provider: "ashby", boardId: "baseten", industry: "ai" },
+  { company: "Watershed", provider: "ashby", boardId: "watershed", industry: "saas" },
+  { company: "Sardine", provider: "ashby", boardId: "sardine", industry: "fintech" },
+
+  // ── Workday enterprises (host + tenant + site verified live) ─────────────────
+  {
+    company: "Nvidia",
+    provider: "workday",
+    boardId: "nvidia",
+    industry: "ai",
+    workday: { host: "nvidia.wd5.myworkdayjobs.com", tenant: "nvidia", site: "NVIDIAExternalCareerSite" },
+  },
+  {
+    company: "Salesforce",
+    provider: "workday",
+    boardId: "salesforce",
+    industry: "saas",
+    workday: { host: "salesforce.wd12.myworkdayjobs.com", tenant: "salesforce", site: "External_Career_Site" },
+  },
+  {
+    company: "Adobe",
+    provider: "workday",
+    boardId: "adobe",
+    industry: "saas",
+    workday: { host: "adobe.wd5.myworkdayjobs.com", tenant: "adobe", site: "external_experienced" },
+  },
+  {
+    company: "CrowdStrike",
+    provider: "workday",
+    boardId: "crowdstrike",
+    industry: "security",
+    workday: { host: "crowdstrike.wd5.myworkdayjobs.com", tenant: "crowdstrike", site: "crowdstrikecareers" },
+  },
+  {
+    company: "Workday",
+    provider: "workday",
+    boardId: "workday",
+    industry: "saas",
+    workday: { host: "workday.wd5.myworkdayjobs.com", tenant: "workday", site: "Workday" },
+  },
 ] as const;
 
 /** Resolve a free-text company name to a tracked target, if we cover it. */

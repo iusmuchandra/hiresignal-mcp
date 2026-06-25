@@ -5,8 +5,8 @@ JSearch). That works, but it has no moat: the data is resold Google Jobs that an
 buy, every call costs money, and "hiring velocity" is a point-in-time guess.
 
 The corpus replaces that for the companies we care about. We scrape each tracked company's
-**own applicant-tracking system** (Greenhouse, Ashby, Lever) directly, on a schedule, and
-store a **time-series** of every posting. That gives us three things the aggregator can't:
+**own applicant-tracking system** (Greenhouse, Ashby, Lever, Workday) directly, on a schedule,
+and store a **time-series** of every posting. That gives us three things the aggregator can't:
 
 1. **First-party data** — pulled from the source of record, company-resolved by construction.
 2. **Zero marginal cost** — public ATS JSON endpoints, no per-query API bill.
@@ -17,6 +17,9 @@ store a **time-series** of every posting. That gives us three things the aggrega
 
 > The corpus is a single SQLite file (`data/corpus.db` by default). That file *is* the
 > proprietary asset. Built on Node's built-in `node:sqlite` — **zero added npm dependencies.**
+>
+> **Runtime requirement:** `node:sqlite` is flag-free on **Node 24+** (and behind
+> `--experimental-sqlite` on 22.5–23).
 
 ## How it works
 
@@ -24,7 +27,7 @@ store a **time-series** of every posting. That gives us three things the aggrega
 TARGETS (src/targets.ts)         ── curated, verified list of companies → ATS board ids
    │
    ▼
-fetchCompanyPostings (src/ats)   ── direct Greenhouse / Ashby / Lever JSON, normalized
+fetchCompanyPostings (src/ats)   ── direct Greenhouse / Ashby / Lever / Workday JSON, normalized
    │
    ▼
 Corpus.ingestCompany (src/store) ── diff vs. last seen, write postings + a dated snapshot
@@ -56,12 +59,12 @@ snapshots(company, captured_at, open_roles, by_department) -- PK (company, captu
 
 ```bash
 npm run build
-npm run ingest          # ingest all targets once (≈3s for ~30 companies)
+npm run ingest          # ingest all targets once (~50 companies)
 npm run ingest:dev      # same, via tsx, no build step
 npm run ingest -- 10    # cap concurrency at 10
 ```
 
-A full run over the current roster ingests ~6,000 open roles in a few seconds, at no cost.
+A full run over the current roster ingests ~12,500 open roles across ~50 companies at no cost (a few seconds for the Greenhouse/Ashby boards; Workday tenants paginate, so a full run is ~1–2 min).
 `get_server_status` reports corpus health (`companies_tracked`, `open_roles`, `snapshots`,
 `last_ingest_at`).
 
@@ -76,11 +79,25 @@ HIRESIGNAL_CORPUS_PATH=/data/corpus.db   # Railway/Fly persistent volume
 INGEST_INTERVAL_HOURS=6
 ```
 
-**B. External cron.** Run `npm run ingest` from a GitHub Actions / Railway scheduled job
-that writes to the same persistent corpus path the server reads.
+**B. External cron (included).** [`.github/workflows/ingest.yml`](.github/workflows/ingest.yml)
+runs every 6h with zero infra: it restores the prior `corpus.db` from a dedicated `corpus-data`
+branch, ingests into it, and force-pushes the updated file back. The accumulated history lives
+*inside* the db (the `snapshots` table), so one commit per run is enough — no git-history bloat.
+A deployment consumes it by fetching that file on boot (`git show origin/corpus-data:corpus.db >
+data/corpus.db`) or baking it into the image. Nothing to configure — it uses the default
+`GITHUB_TOKEN`.
 
 The corpus only earns its moat if it runs continuously — **start the schedule now**, even
 pre-launch, so history is already deep when the first customer connects.
+
+### Provider notes
+
+- **Greenhouse / Ashby / Lever** expose exact posted dates → accurate add-windows immediately.
+- **Workday** is fully paginated (so closure-detection stays correct) but only reports *relative*
+  posted dates ("Posted Today", "5 Days Ago", "30+ Days Ago" → treated as unknown). Its
+  add-window counts are therefore coarser on day one; the corpus's own `first_seen` tracking
+  sharpens them over subsequent ingests. Each Workday target needs a verified `{host, tenant,
+  site}` (see `src/targets.ts`).
 
 ## Adding a company
 
@@ -92,6 +109,10 @@ then re-run ingest. Verify an id before adding:
 curl -s "https://boards-api.greenhouse.io/v1/boards/<id>/jobs" | head -c 200
 # Ashby — expect {"jobs":[...]}
 curl -s "https://api.ashbyhq.com/posting-api/job-board/<id>" | head -c 200
+# Workday — expect {"total":N,"jobPostings":[...]}; needs {host, tenant, site}
+curl -s -X POST "https://<host>/wday/cxs/<tenant>/<site>/jobs" \
+  -H 'content-type: application/json' \
+  -d '{"appliedFacets":{},"limit":20,"offset":0,"searchText":""}' | head -c 200
 ```
 
 Dead or wrong ids are skipped at ingest time (one bad board never aborts the run), so the

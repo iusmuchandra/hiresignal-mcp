@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { normalizeGreenhouse } from "../src/ats/greenhouse.js";
 import { normalizeAshby } from "../src/ats/ashby.js";
 import { normalizeLever } from "../src/ats/lever.js";
+import { normalizeWorkday, parsePostedOn } from "../src/ats/workday.js";
 import { Corpus } from "../src/store/corpus.js";
 import type { AtsPosting, Target } from "../src/ats/types.js";
 
@@ -87,6 +88,48 @@ describe("normalizeLever", () => {
     expect(out[0]!.department).toBe("product");
     expect(out[0]!.remote).toBe(true);
     expect(out[0]!.postedAt).toBe(new Date(created).toISOString());
+  });
+});
+
+describe("normalizeWorkday + parsePostedOn", () => {
+  const now = new Date("2026-06-24T00:00:00Z");
+
+  it("parses relative posted dates, treating 30+ as unknown", () => {
+    expect(parsePostedOn("Posted Today", now)).toBe(now.toISOString());
+    expect(parsePostedOn("Posted Yesterday", now)).toBe(
+      new Date(now.getTime() - 86_400_000).toISOString()
+    );
+    expect(parsePostedOn("Posted 5 Days Ago", now)).toBe(
+      new Date(now.getTime() - 5 * 86_400_000).toISOString()
+    );
+    expect(parsePostedOn("Posted 30+ Days Ago", now)).toBeNull();
+    expect(parsePostedOn(undefined, now)).toBeNull();
+  });
+
+  it("normalizes job postings and builds absolute urls", () => {
+    const out = normalizeWorkday(
+      {
+        total: 1,
+        jobPostings: [
+          {
+            title: "Machine Learning Engineer",
+            externalPath: "/job/Santa-Clara/Machine-Learning-Engineer_R1",
+            locationsText: "Remote, US",
+            postedOn: "Posted Today",
+            bulletFields: ["R1"],
+          },
+        ],
+      },
+      "nvidia.wd5.myworkdayjobs.com",
+      now
+    );
+    expect(out).toHaveLength(1);
+    const j = out[0]!;
+    expect(j.externalId).toBe("/job/Santa-Clara/Machine-Learning-Engineer_R1");
+    expect(j.department).toBe("data_ml");
+    expect(j.remote).toBe(true);
+    expect(j.url).toBe("https://nvidia.wd5.myworkdayjobs.com/job/Santa-Clara/Machine-Learning-Engineer_R1");
+    expect(j.postedAt).toBe(now.toISOString());
   });
 });
 

@@ -349,6 +349,13 @@ export class Corpus {
   }
 
   close(): void {
+    // Fold the WAL back into the main db file so a copied/committed corpus.db is
+    // complete on its own (the cron persists just that file).
+    try {
+      this.db.exec("PRAGMA wal_checkpoint(TRUNCATE);");
+    } catch {
+      /* best effort */
+    }
     this.db.close();
   }
 }

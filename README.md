@@ -42,14 +42,14 @@ Header: Authorization: Bearer hs_demo_0b25932234553fd38b571f12c1439bfd
 ## First-party corpus (the data moat)
 
 For a curated set of high-value accounts, HireSignal doesn't resell aggregated data — it
-scrapes each company's **own ATS** (Greenhouse / Ashby / Lever) directly and stores a
+scrapes each company's **own ATS** (Greenhouse / Ashby / Lever / Workday) directly and stores a
 **time-series** of every posting in a local SQLite file. That makes `company_hiring_velocity`
 a real signal (roles **added and closed** over time, with the company's actual posted dates),
 returns `data_source: "first_party_ats"`, costs nothing per query, and — because the value is
 the *accumulating history* — is the one thing a competitor can't backfill.
 
 ```bash
-npm run build && npm run ingest     # ~30 companies, ~6k open roles, a few seconds, $0
+npm run build && npm run ingest     # ~50 companies, ~12k open roles, ~$0
 ```
 
 The server can keep this fresh itself (set `INGEST_INTERVAL_HOURS` + a persistent
