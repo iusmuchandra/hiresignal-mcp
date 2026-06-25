@@ -37,7 +37,24 @@ Header: Authorization: Bearer hs_demo_0b25932234553fd38b571f12c1439bfd
 | `industry_hiring_heatmap` | Per-department open-role counts and % change for an industry vertical. |
 | `competitor_talent_intel` | Compare up to 5 companies side by side on open roles, top titles, and growth signal. |
 | `job_alert_check` | Poll for new postings since N hours ago. Designed for cron / agent loops. |
-| `get_server_status` | Health snapshot: version, uptime, configured providers, cache size. |
+| `get_server_status` | Health snapshot: version, uptime, configured providers, **corpus stats**, cache size. |
+
+## First-party corpus (the data moat)
+
+For a curated set of high-value accounts, HireSignal doesn't resell aggregated data — it
+scrapes each company's **own ATS** (Greenhouse / Ashby / Lever) directly and stores a
+**time-series** of every posting in a local SQLite file. That makes `company_hiring_velocity`
+a real signal (roles **added and closed** over time, with the company's actual posted dates),
+returns `data_source: "first_party_ats"`, costs nothing per query, and — because the value is
+the *accumulating history* — is the one thing a competitor can't backfill.
+
+```bash
+npm run build && npm run ingest     # ~30 companies, ~6k open roles, a few seconds, $0
+```
+
+The server can keep this fresh itself (set `INGEST_INTERVAL_HOURS` + a persistent
+`HIRESIGNAL_CORPUS_PATH`). Companies outside the corpus transparently fall back to the
+aggregator. Full design, schema, and how to add companies: **[CORPUS.md](./CORPUS.md)**.
 
 ## Configuration
 
@@ -48,9 +65,15 @@ SERPAPI_KEY=...               # https://serpapi.com — used by search_jobs, job
 JSEARCH_RAPIDAPI_KEY=...      # https://rapidapi.com/letscrape-6bRBa3QguO5/api/jsearch
 HIRESIGNAL_API_KEYS=k1,k2     # comma-separated allowlist of client keys
 PORT=3000                     # default
+
+# First-party corpus (optional but recommended — see CORPUS.md)
+HIRESIGNAL_CORPUS_PATH=./data/corpus.db   # SQLite corpus location (use a volume in prod)
+INGEST_INTERVAL_HOURS=6                    # if set, server self-ingests on boot + interval
 ```
 
-At least one provider key must be set. `get_server_status` will report `"degraded"` if neither is configured.
+A data source must be available: either an **ingested corpus** (`npm run ingest`) or a provider
+key. `get_server_status` reports `"ok"` when the corpus is active *or* a key is set, and
+`"degraded"` when there is neither.
 
 `HIRESIGNAL_API_KEYS` accepts one or more comma-separated keys (or use `HIRESIGNAL_API_KEY` for a single key). If neither is set the server runs in **open mode** — it logs a startup warning and accepts unauthenticated calls, which is convenient for local dev but **must not** be used in any deployment exposed to the network.
 

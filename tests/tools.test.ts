@@ -51,6 +51,7 @@ import { industryHiringHeatmap } from "../src/tools/industryHeatmap.js";
 import { competitorTalentIntel } from "../src/tools/competitorIntel.js";
 import { jobAlertCheck } from "../src/tools/jobAlertCheck.js";
 import { getServerStatus } from "../src/tools/serverStatus.js";
+import { getCorpus, resetCorpus } from "../src/store/corpus.js";
 
 beforeEach(() => {
   mockResponses.length = 0;
@@ -247,30 +248,51 @@ describe("searchJobs (SerpApi)", () => {
 // ----- companyVelocity (JSearch) -----
 
 describe("companyHiringVelocity", () => {
-  it("aggregates recent + monthly into a trend and department breakdown", async () => {
+  it("falls back to the aggregator for a company outside the corpus", async () => {
+    // "Globex" is not a tracked target, so this exercises the aggregator path
+    // deterministically regardless of whether a local corpus has been ingested.
     const recent = {
       data: Array.from({ length: 4 }, (_, i) => ({
         job_id: `r${i}`,
-        employer_name: "Stripe",
+        employer_name: "Globex",
         job_title: i % 2 === 0 ? "Software Engineer" : "Product Manager",
       })),
     };
     const monthly = {
       data: Array.from({ length: 12 }, (_, i) => ({
         job_id: `m${i}`,
-        employer_name: "Stripe",
+        employer_name: "Globex",
         job_title: i % 3 === 0 ? "ML Engineer" : "Software Engineer",
       })),
     };
     queueResponse(200, recent);
     queueResponse(200, monthly);
 
-    const result = await companyHiringVelocity({ company_name: "Stripe", time_window_days: 7 });
-    expect(result.company_name).toBe("Stripe");
+    const result = await companyHiringVelocity({ company_name: "Globex", time_window_days: 7 });
+    expect(result.company_name).toBe("Globex");
+    expect(result.data_source).toBe("aggregated_api");
     expect(result.roles_added_last_7d).toBe(4);
     expect(result.roles_added_last_30d).toBe(12);
     expect(result.top_departments_hiring.length).toBeGreaterThan(0);
     expect(["growing", "stable", "shrinking"]).toContain(result.hiring_trend);
+  });
+
+  it("uses the first-party corpus for a tracked company", async () => {
+    resetCorpus(":memory:");
+    const corpus = getCorpus();
+    corpus.ingestCompany(
+      { company: "Stripe", provider: "greenhouse", boardId: "stripe", industry: "fintech" },
+      [
+        { externalId: "1", title: "Backend Engineer", department: "engineering", location: "Remote", remote: true, postedAt: new Date().toISOString(), url: "u" },
+        { externalId: "2", title: "Account Executive", department: "sales", location: "NYC", remote: false, postedAt: new Date().toISOString(), url: "u" },
+      ]
+    );
+
+    const result = await companyHiringVelocity({ company_name: "Stripe", time_window_days: 7 });
+    expect(result.data_source).toBe("first_party_ats");
+    expect(result.total_open_roles).toBe(2);
+    expect(result.roles_added_last_7d).toBe(2);
+    resetCorpus();
   });
 });
 
@@ -465,11 +487,29 @@ describe("getServerStatus", () => {
     expect(result.version).toBeTruthy();
   });
 
-  it("reports 'degraded' when no providers configured", async () => {
+  it("reports 'degraded' when no providers and an empty corpus", async () => {
     delete process.env.SERPAPI_KEY;
     delete process.env.JSEARCH_RAPIDAPI_KEY;
+    resetCorpus(":memory:"); // isolate from any locally-ingested data/corpus.db
     const result = await getServerStatus({});
     expect(result.status).toBe("degraded");
+    expect(result.providers.first_party_corpus).toBe(false);
+    resetCorpus();
+  });
+
+  it("reports 'ok' when the corpus is active even without provider keys", async () => {
+    delete process.env.SERPAPI_KEY;
+    delete process.env.JSEARCH_RAPIDAPI_KEY;
+    resetCorpus(":memory:");
+    getCorpus().ingestCompany(
+      { company: "Stripe", provider: "greenhouse", boardId: "stripe", industry: "fintech" },
+      [{ externalId: "1", title: "Engineer", department: "engineering", location: "Remote", remote: true, postedAt: null, url: "u" }]
+    );
+    const result = await getServerStatus({});
+    expect(result.status).toBe("ok");
+    expect(result.providers.first_party_corpus).toBe(true);
+    expect(result.corpus.open_roles).toBe(1);
+    resetCorpus();
   });
 });
 

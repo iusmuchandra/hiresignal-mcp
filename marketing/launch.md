@@ -1,9 +1,19 @@
 # HireSignal — Launch Kit
 
-Positioning: **Hiring-intent signals for B2B sales/GTM.** Turn live job postings into
-buying signals your AI agent can call. Not a job board. Not a recruiting tool.
+Positioning: **The hiring-signal layer for GTM agents.** Turn live job postings into
+buying signals any AI agent can call over MCP. Not a job board. Not a recruiting tool.
+Not trying to out-data ZoomInfo — the easiest way to give an agent fresh hiring signals.
 
-Buyer: RevOps / SDR leaders / founders doing outbound / builders of AI sales agents.
+**Primary audience: people *building* GTM/sales agents** (Clay/Cursor/Claude/Cline tinkerers,
+indie GTM-tool makers, RevOps engineers automating outbound). They live in MCP clients, they
+feel the "I'd have to wire up SerpApi + JSearch + velocity math myself" pain, and they're the
+only buyer you can actually reach *through the channel you've already built (MCP)*.
+**Secondary:** RevOps / SDR leaders / founders doing outbound — real budget (comps: PredictLeads
+~$490/mo, Clay $149–720/mo), but they don't live in Cursor, so sell to them later via the builders.
+
+Why a builder picks this: one `mcp-remote` line instead of a SerpApi/JSearch integration,
+recency windows, dedup, and a growing/stable/shrinking velocity signal you'd otherwise hand-roll.
+Composable — chain it with your enrichment/email tools in the same agent loop.
 
 Instant trial (put this in every post):
 ```
@@ -12,6 +22,26 @@ Header: Authorization: Bearer hs_demo_0b25932234553fd38b571f12c1439bfd
 ```
 
 ---
+
+## 0) Where the builders actually are (do these FIRST — highest leverage)
+
+The X/LinkedIn/Reddit-sales posts below reach the *buyer*, not the *user*. For v1 your job is
+to get **agent-builders** to connect the demo key. Prioritize channels where they hang out:
+
+- **MCP registry + [Smithery](https://smithery.ai)** — make sure the listing is live, the
+  tool list reads well, and install is one copy-paste. This is your storefront; most discovery
+  starts here. Verify `io.github.iusmuchandra/hiresignal` resolves and the demo key works.
+- **"Awesome MCP Servers" lists** — open a PR adding HireSignal under a GTM/sales/data category
+  (e.g. punkpeye/awesome-mcp-servers and similar). Free, durable, exactly your audience.
+- **r/mcp, r/ClaudeAI, r/cursor, the Cursor/Cline/MCP Discords** — post the 60s demo, framed as
+  "an MCP server you can drop into a sales agent," not as a sales pitch. Ask what signal to add.
+- **Clay community / GTM-engineering circles** — Clay builders chain signals for a living; an
+  MCP-native hiring signal is directly composable. Show it feeding a Clay-style enrichment loop.
+- **Show HN** (section 2) — builder-heavy, rewards a working demo + candor. Single biggest hit
+  if it lands.
+
+Only after a builder integrates it does the RevOps/X/LinkedIn audience (sections 3–5) matter —
+they become the *demand* the builders are serving. Keep those, but treat them as second wave.
 
 ## 1) Demo script (60-second screen recording)
 
@@ -53,6 +83,12 @@ It writes a personalized email grounded in the signal. Caption:
 > record the clean take. If the demo key is quota-limited that day, use your hs_live key
 > for recording and show the demo key in the end card.
 
+> **Builder cut (record this too — it's the one your primary audience cares about):** instead
+> of a chat, show the connect step — one `mcp-remote` line in a Cursor/Claude config — then an
+> *agent loop* using `job_alert_check` to poll for new reqs and hand each to an enrichment/email
+> step. Frame: "drop-in hiring signal for your sales agent — one MCP server, not three API
+> integrations." This is the demo that belongs on r/mcp, Smithery, and the Awesome-MCP PR.
+
 ---
 
 ## 2) Show HN
@@ -73,8 +109,11 @@ It writes a personalized email grounded in the signal. Caption:
 > RevOps role this week, and which are scaling fastest?" and act on the answer.
 >
 > It's intentionally narrow and agent-native. It's not trying to out-data ZoomInfo — it's
-> the easiest way to give an AI sales agent fresh hiring signals over MCP. Data comes from
-> Google Jobs (SerpApi) + JSearch today.
+> the easiest way to give an AI sales agent fresh hiring signals over MCP. For a curated set
+> of ~30 high-value companies it scrapes their own ATS (Greenhouse/Ashby/Lever) directly and
+> keeps a time-series, so `company_hiring_velocity` returns real roles-added/closed over time
+> (data_source: first_party_ats), $0 per query; everything else falls back to a search
+> aggregator. Stored in a single SQLite file via Node's built-in driver — no extra deps.
 >
 > Live demo (shared rate-limited key, point any MCP client at it):
 > URL: https://hiresignal-mcp-production-d4d9.up.railway.app/sse
@@ -167,9 +206,10 @@ external links.)
 > scaling fastest" and get a ranked list. It also does account scoring by hiring velocity
 > and side-by-side comparison of a target list.
 >
-> Honest limits: data's from Google Jobs + JSearch right now, signals are directional with
-> confidence scores. I want to know if this is actually useful for prospecting or if I'm
-> fooling myself. Demo (point any MCP client at it):
+> Honest limits: deep-not-wide — ~30 curated companies are scraped first-party from their
+> ATS with real hiring-velocity history; everything else falls back to a search aggregator
+> and is more directional. I want to know if this is actually useful for prospecting or if
+> I'm fooling myself. Demo (point any MCP client at it):
 > URL: https://hiresignal-mcp-production-d4d9.up.railway.app/sse
 > Bearer: hs_demo_0b25932234553fd38b571f12c1439bfd
 
@@ -177,13 +217,18 @@ external links.)
 
 ## Launch sequencing (do in this order, same day)
 
-1. Make sure the v0.2.0 registry listing is live + the demo key works.
-2. Record + attach the 60s demo gif/video to every post (this is the single biggest lever).
+1. Make sure the v0.2.0 registry listing is live + the demo key works. **Then do section 0:**
+   verify Smithery/registry listing, open the Awesome-MCP-Servers PR. These are durable and
+   reach builders without a launch-day spike.
+2. Record + attach the 60s demo gif/video to every post — record **both** cuts (chat + builder).
+   This is the single biggest lever.
 3. Post Show HN in the morning (US time). Reply to every comment within minutes.
-4. Post the X thread + LinkedIn an hour later; cross-link the HN thread if it's getting traction.
-5. Reddit last, tailored per sub, only where self-promo is allowed.
+4. Post to r/mcp, r/ClaudeAI, r/cursor + the MCP/Cursor Discords (builder cut). This is your
+   primary audience — weight effort here.
+5. Post the X thread + LinkedIn an hour later; cross-link the HN thread if it's getting traction.
+   Treat these (and r/sales) as the *second wave* — buyer demand, not first users.
 6. Watch for connections (set up usage monitoring) — the only metric that matters today is
-   "did a stranger connect and call a tool?"
+   "did a stranger connect and call a tool?" The win condition: a builder asks for their own key.
 
 ## What to measure
 - # of unique sessions / tool calls on the demo key (proxy for interest)
