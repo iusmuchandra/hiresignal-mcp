@@ -1,0 +1,65 @@
+name: Corpus ingest
+
+# Grows the first-party corpus on a schedule. The corpus SQLite file is the moat,
+# so it must PERSIST between runs: we restore the prior corpus.db from a dedicated
+# `corpus-data` branch, ingest into it, then force-push the updated file back.
+# The accumulated history lives inside the db (the snapshots table), so a single
+# force-pushed commit per run is enough — no git history bloat.
+
+on:
+  schedule:
+    - cron: "23 */6 * * *" # every 6 hours
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: corpus-ingest
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24" # node:sqlite is built-in and flag-free on Node 24
+          cache: "npm"
+
+      - run: npm ci
+      - run: npm run build
+
+      - name: Restore prior corpus
+        run: |
+          mkdir -p data
+          if git fetch origin corpus-data 2>/dev/null; then
+            git show origin/corpus-data:corpus.db > data/corpus.db \
+              && echo "restored prior corpus ($(stat -c%s data/corpus.db) bytes)" \
+              || echo "corpus-data branch has no corpus.db; starting fresh"
+          else
+            echo "no corpus-data branch yet; starting fresh"
+          fi
+
+      - name: Ingest
+        run: node dist/ingest.js
+
+      - name: Publish corpus snapshot
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          test -f data/corpus.db || { echo "no corpus produced"; exit 1; }
+          tmp="$(mktemp -d)"
+          cp data/corpus.db "$tmp/corpus.db"
+          cd "$tmp"
+          git init -q
+          git checkout -q -b corpus-data
+          git add corpus.db
+          git -c user.name="hiresignal-bot" \
+              -c user.email="actions@users.noreply.github.com" \
+              commit -q -m "corpus snapshot (run ${GITHUB_RUN_ID})"
+          git push -q -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" corpus-data
+          echo "published corpus.db to corpus-data branch"

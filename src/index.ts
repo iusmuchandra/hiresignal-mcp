@@ -27,6 +27,7 @@ import {
   type AuthConfig,
 } from "./auth.js";
 
+import { runIngest } from "./ingest.js";
 import { VERSION, SERVER_NAME } from "./version.js";
 
 interface ToolDefinition {
@@ -215,7 +216,32 @@ async function main(): Promise<void> {
         endpoints: { sse: "/sse", messages: "/messages", health: "/health" },
       }) + "\n"
     );
+    maybeScheduleIngest();
   });
+}
+
+/**
+ * Optional self-sustaining corpus: when INGEST_INTERVAL_HOURS is set, the server
+ * ingests on boot and on an interval into its own corpus file. Point
+ * HIRESIGNAL_CORPUS_PATH at a persistent volume (e.g. /data/corpus.db on Railway)
+ * and a single instance keeps the moat growing with no external cron.
+ */
+function maybeScheduleIngest(): void {
+  const hours = Number(process.env.INGEST_INTERVAL_HOURS ?? 0);
+  if (!Number.isFinite(hours) || hours <= 0) return;
+
+  const tick = (): void => {
+    runIngest({ concurrency: 6 }).catch((err: unknown) => {
+      const message = err instanceof Error ? err.message : String(err);
+      process.stderr.write(`scheduled ingest failed: ${message}\n`);
+    });
+  };
+
+  tick(); // prime the corpus on boot
+  setInterval(tick, hours * 60 * 60 * 1000).unref();
+  process.stdout.write(
+    JSON.stringify({ event: "ingest_scheduled", interval_hours: hours }) + "\n"
+  );
 }
 
 main().catch((err: unknown) => {
