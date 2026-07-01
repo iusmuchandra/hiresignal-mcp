@@ -1,6 +1,6 @@
 {
   "name": "hiresignal-mcp",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Hiring-intent signal API for B2B sales/GTM. Turn live job postings into buying signals from any AI agent.",
   "type": "module",
   "main": "dist/index.js",
