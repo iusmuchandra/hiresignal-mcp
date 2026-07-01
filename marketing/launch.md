@@ -110,7 +110,7 @@ It writes a personalized email grounded in the signal. Caption:
 >
 > It's intentionally narrow and agent-native. It's not trying to out-data ZoomInfo — it's
 > the easiest way to give an AI sales agent fresh hiring signals over MCP. For a curated set
-> of ~50 high-value companies it scrapes their own ATS (Greenhouse/Ashby/Lever/Workday) directly and
+> of ~50 high-value companies it scrapes their own ATS (Greenhouse/Ashby/Lever) directly and
 > keeps a time-series, so `company_hiring_velocity` returns real roles-added/closed over time
 > (data_source: first_party_ats), $0 per query; everything else falls back to a search
 > aggregator. Stored in a single SQLite file via Node's built-in driver — no extra deps.
@@ -217,7 +217,9 @@ external links.)
 
 ## Launch sequencing (do in this order, same day)
 
-1. Make sure the v0.2.0 registry listing is live + the demo key works. **Then do section 0:**
+1. Make sure the v0.3.0 registry listing is live + the demo key works. *(Done 2026-07-01:
+   v0.3.0 published to the registry, server live on Railway with the first-party corpus
+   ingesting every 6h on a persistent volume, live + demo keys verified over SSE.)* **Then do section 0:**
    verify Smithery/registry listing, open the Awesome-MCP-Servers PR. These are durable and
    reach builders without a launch-day spike.
 2. Record + attach the 60s demo gif/video to every post — record **both** cuts (chat + builder).
