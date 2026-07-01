@@ -110,7 +110,7 @@ It writes a personalized email grounded in the signal. Caption:
 >
 > It's intentionally narrow and agent-native. It's not trying to out-data ZoomInfo — it's
 > the easiest way to give an AI sales agent fresh hiring signals over MCP. For a curated set
-> of ~50 high-value companies it scrapes their own ATS (Greenhouse/Ashby/Lever) directly and
+> of ~50 high-value companies it scrapes their own ATS (Greenhouse/Ashby/Lever/Workday) directly and
 > keeps a time-series, so `company_hiring_velocity` returns real roles-added/closed over time
 > (data_source: first_party_ats), $0 per query; everything else falls back to a search
 > aggregator. Stored in a single SQLite file via Node's built-in driver — no extra deps.
