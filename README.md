@@ -2,6 +2,10 @@
 
 **Turn live job postings into buying signals your AI agent can call.**
 
+![HireSignal live demo — three tool calls against the hosted server](marketing/demo.gif)
+
+*Live demo against the hosted instance — run it yourself with `node scripts/demo.mjs`.*
+
 When a company posts for a VP Sales, RevOps Manager, or Data Security Analyst, it's telling you it has a pain and an approved budget — typically **60–90 days before** it starts researching vendors. HireSignal is an MCP server that surfaces those hiring signals so your sales/GTM agent can find in-market accounts, score them, and time outreach.
 
 Plug it into Claude, Cursor, Cline, or Windsurf and ask:
