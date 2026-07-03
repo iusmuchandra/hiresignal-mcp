@@ -43,6 +43,12 @@ to get **agent-builders** to connect the demo key. Prioritize channels where the
 Only after a builder integrates it does the RevOps/X/LinkedIn audience (sections 3–5) matter —
 they become the *demand* the builders are serving. Keep those, but treat them as second wave.
 
+> **DONE (2026-07-03): the builder-cut demo exists** — `marketing/demo.gif` (recorded via
+> `vhs marketing/demo.tape`, re-recordable anytime; warm the cache with one `node scripts/demo.mjs`
+> run first). It's embedded at the top of the README and is the gif to attach to the X thread,
+> r/mcp, and Reddit posts. The chat-cut below (Claude Desktop screen recording) is still worth
+> recording for LinkedIn/HN comments, but it is no longer a launch blocker.
+
 ## 1) Demo script (60-second screen recording)
 
 Goal: show Claude (with HireSignal connected) turning a hiring signal into a
